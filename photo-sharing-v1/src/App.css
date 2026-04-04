@@ -1,0 +1,27 @@
+.app-shell {
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+.main-topbar-buffer {
+  height: 78px;
+}
+
+.main-layout {
+  padding: 0 16px 16px;
+}
+
+.main-grid-item {
+  min-height: calc(100vh - 110px);
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+.sidebar-paper {
+  position: sticky;
+  top: 88px;
+}
+
+.content-paper {
+  overflow: auto;
+}

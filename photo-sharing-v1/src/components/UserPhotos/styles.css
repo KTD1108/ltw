@@ -1,0 +1,46 @@
+.user-photos-container {
+  width: 100%;
+}
+
+.user-photos-subtitle {
+  margin-bottom: 18px;
+}
+
+.photo-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.photo-card {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.photo-image {
+  max-height: 520px;
+  object-fit: cover;
+}
+
+.photo-divider {
+  margin: 12px 0 16px;
+}
+
+.comment-block {
+  padding: 10px 0;
+}
+
+.comment-user-link {
+  text-decoration: none;
+  color: #1f3c88;
+  font-weight: 600;
+}
+
+.photo-stepper {
+  margin-top: 16px;
+  align-items: center;
+}
+
+.photo-stepper-text {
+  min-width: 110px;
+  text-align: center;
+}
