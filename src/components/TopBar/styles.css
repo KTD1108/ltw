@@ -1,0 +1,41 @@
+.topbar-appBar {
+  background: #1f3c88;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  color: white;
+}
+
+.topbar-toolbar {
+  min-height: 72px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.topbar-name {
+  font-weight: 700;
+  min-width: 180px;
+  margin: 0;
+}
+
+.topbar-context {
+  flex: 1;
+  text-align: center;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.topbar-actions .MuiFormControlLabel-label {
+  font-size: 0.95rem;
+}
+
+
