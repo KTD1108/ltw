@@ -1,0 +1,15 @@
+.user-detail-card {
+  background: transparent;
+}
+
+.user-detail-chips {
+  margin: 12px 0 18px;
+}
+
+.user-detail-description {
+  margin-bottom: 22px;
+  line-height: 1.7;
+  max-width: 720px;
+}
+
+
