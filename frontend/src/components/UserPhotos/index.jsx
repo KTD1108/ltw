@@ -50,6 +50,35 @@ function UserPhotos({ uploadTrigger }) {
     }
   };
 
+  const handleDeletePhoto = async (photoId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bức ảnh này không?")) return;
+    try {
+      await fetchModel(`/photos/${photoId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: currentUserId }),
+      });
+      alert("Xóa ảnh thành công!");
+      setReloadTrigger((prev) => prev + 1);
+    } catch (err) {
+      alert("Lỗi: " + err.message);
+    }
+  };
+
+  const handleDeleteComment = async (photoId, commentId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bình luận này không?")) return;
+    try {
+      await fetchModel(`/comments/${photoId}/${commentId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: currentUserId }),
+      });
+      setReloadTrigger((prev) => prev + 1);
+    } catch (err) {
+      alert("Lỗi: " + err.message);
+    }
+  };
+
   if (!user) return <div>Đang tải...</div>;
 
   const BASE_URL = process.env.REACT_APP_API_URL || "";
@@ -62,7 +91,17 @@ function UserPhotos({ uploadTrigger }) {
         {photos.map((photo) => (
           <div key={photo._id} style={{ marginBottom: "35px" }}>
             <img src={`${BASE_URL}/images/${photo.file_name}`} alt="photo" style={{ maxWidth: "100%", maxHeight: "300px" }} />
-            <p>Ngày đăng: {new Date(photo.date_time).toLocaleString()}</p>
+            <p>
+              Ngày đăng: {new Date(photo.date_time).toLocaleString()}
+              {photo.user_id === currentUserId && (
+                <button 
+                  onClick={() => handleDeletePhoto(photo._id)}
+                  style={{ marginLeft: "15px", color: "red", cursor: "pointer" }}
+                >
+                  Xóa ảnh
+                </button>
+              )}
+            </p>
 
             <div>
               <h5>Bình luận:</h5>
@@ -74,6 +113,16 @@ function UserPhotos({ uploadTrigger }) {
                       {comment.user ? `${comment.user.first_name} ${comment.user.last_name}` : "Ẩn danh"}
                     </Link>
                     : {comment.comment} ({new Date(comment.date_time).toLocaleString()})
+                    
+                    {/* Chỉ hiển thị nút xóa bình luận nếu người dùng đăng nhập là tác giả comment hoặc chủ sở hữu ảnh */}
+                    {(comment.user?._id === currentUserId || photo.user_id === currentUserId) && (
+                      <button 
+                        onClick={() => handleDeleteComment(photo._id, comment._id)}
+                        style={{ marginLeft: "10px", color: "red", border: "none", background: "none", cursor: "pointer", fontSize: "12px" }}
+                      >
+                        [Xóa]
+                      </button>
+                    )}
                   </p>
                 </div>
               ))}

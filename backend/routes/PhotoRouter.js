@@ -1,5 +1,7 @@
 const express = require("express");
 const Photo = require("../db/photoModel");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = (upload) => {
   const router = express.Router();
@@ -98,6 +100,78 @@ module.exports = (upload) => {
     } catch (error) {
       console.error("Lỗi đăng ảnh:", error);
       return response.status(500).json({ error: "Lỗi hệ thống khi lưu ảnh!" });
+    }
+  });
+
+  // DELETE /photos/:photo_id - Xóa ảnh
+  router.delete("/photos/:photo_id", async (request, response) => {
+    const { user_id } = request.body;
+    if (!user_id) {
+      return response.status(400).json({ error: "Thiếu user_id người yêu cầu!" });
+    }
+
+    try {
+      const photo = await Photo.findById(request.params.photo_id);
+      if (!photo) {
+        return response.status(404).json({ error: "Không tìm thấy ảnh!" });
+      }
+
+      // Chỉ chủ ảnh mới có quyền xóa
+      if (photo.user_id.toString() !== user_id) {
+        return response.status(403).json({ error: "Bạn không có quyền xóa ảnh này!" });
+      }
+
+      // Xóa file vật lý nếu tồn tại
+      const filePath = path.join(__dirname, "../images", photo.file_name);
+      if (fs.existsSync(filePath)) {
+        fs.unlink(filePath, (err) => {
+          if (err) console.error("Lỗi xóa tệp ảnh vật lý:", err);
+        });
+      }
+
+      await Photo.findByIdAndDelete(request.params.photo_id);
+      return response.status(200).json({ message: "Xóa ảnh thành công!" });
+    } catch (error) {
+      console.error("Lỗi xóa ảnh:", error);
+      return response.status(500).json({ error: "Lỗi hệ thống khi xóa ảnh!" });
+    }
+  });
+
+  // DELETE /comments/:photo_id/:comment_id - Xóa bình luận
+  router.delete("/comments/:photo_id/:comment_id", async (request, response) => {
+    const { user_id } = request.body;
+    if (!user_id) {
+      return response.status(400).json({ error: "Thiếu user_id người yêu cầu!" });
+    }
+
+    try {
+      const photo = await Photo.findById(request.params.photo_id);
+      if (!photo) {
+        return response.status(404).json({ error: "Không tìm thấy ảnh!" });
+      }
+
+      // Tìm comment cần xóa
+      const comment = photo.comments.id(request.params.comment_id);
+      if (!comment) {
+        return response.status(404).json({ error: "Không tìm thấy bình luận!" });
+      }
+
+      // Người có quyền xóa: Người viết bình luận HOẶC Chủ sở hữu bức ảnh
+      const isCommentAuthor = comment.user_id.toString() === user_id;
+      const isPhotoOwner = photo.user_id.toString() === user_id;
+
+      if (!isCommentAuthor && !isPhotoOwner) {
+        return response.status(403).json({ error: "Bạn không có quyền xóa bình luận này!" });
+      }
+
+      // Tiến hành xóa bình luận khỏi mảng comments
+      photo.comments.pull({ _id: request.params.comment_id });
+      await photo.save();
+
+      return response.status(200).json({ message: "Xóa bình luận thành công!" });
+    } catch (error) {
+      console.error("Lỗi xóa bình luận:", error);
+      return response.status(500).json({ error: "Lỗi hệ thống khi xóa bình luận!" });
     }
   });
 
