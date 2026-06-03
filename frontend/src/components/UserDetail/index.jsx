@@ -5,12 +5,17 @@ import fetchModel from "../../lib/fetchModelData";
 function UserDetail() {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
+  const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
     async function loadUserDetail() {
       try {
-        const data = await fetchModel(`/user/${userId}`);
-        setUser(data);
+        const [userData, photoData] = await Promise.all([
+          fetchModel(`/user/${userId}`),
+          fetchModel(`/photosOfUser/${userId}`),
+        ]);
+        setUser(userData);
+        setPhotos(photoData || []);
       } catch (err) {
         console.error("Lỗi tải chi tiết user:", err);
       }
@@ -28,6 +33,7 @@ function UserDetail() {
       <p>Địa chỉ: {user.location || "N/A"}</p>
       <p>Nghề nghiệp: {user.occupation || "N/A"}</p>
       <p>Mô tả bản thân: {user.description || "N/A"}</p>
+      <p>Số lượng ảnh đã tải lên: {photos.length}</p>
       
       <p style={{ marginTop: "20px" }}>
         <Link to={`/photos/${user._id}`} style={{ fontWeight: "bold" }}>

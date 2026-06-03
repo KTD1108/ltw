@@ -104,7 +104,7 @@ function UserPhotos({ uploadTrigger }) {
             </p>
 
             <div>
-              <h5>Bình luận:</h5>
+              <h5>Bình luận ({photo.comments ? photo.comments.length : 0}):</h5>
               {photo.comments && photo.comments.map((comment) => (
                 <div key={comment._id} style={{ margin: "5px 0" }}>
                   <p style={{ margin: 0 }}>
